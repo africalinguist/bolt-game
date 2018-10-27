@@ -1,5 +1,6 @@
 package com.afyber.bolt;
 
+
 import com.badlogic.gdx.Game;
 
 // Input stuff
@@ -65,7 +66,7 @@ public class Bolt extends Game implements InputProcessor {
 
 			if (bulletTime >= 25) {
 				if (playerShoot) {
-					bullets.add(new ScrollingSprite("/home/afyber/Documents/Pokeball 32x.png", playerSprite.x + 16, playerSprite.y + 64, 32, 32, -500f));
+					bullets.add(new ScrollingSprite("/home/afyber/Documents/Pokeball 32x.png", playerSprite.x + 16, playerSprite.y + 16, 32, 32, -500f));
 					bulletTime = 0;
 				}
 			}
@@ -87,7 +88,7 @@ public class Bolt extends Game implements InputProcessor {
 						path = "cloud3.png";
 					}
 
-					clouds.add(new ScrollingSprite(path, Math.round((float) Math.random() * screenWidth) - 30 * size, 690, 30 * size, 45 * size, (int)(100f * (Math.random() + 0.5f))));
+					clouds.add(new ScrollingSprite(path, Math.round((float) Math.random() * screenWidth) - 30 * size, 30 * size, 45 * size, (int)(100f * (Math.random() + 0.5f))));
 					cloudWaitTime = 50;
 				}
 			}
