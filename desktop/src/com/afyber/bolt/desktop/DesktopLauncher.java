@@ -12,6 +12,7 @@ public class DesktopLauncher {
 		config.width = 500;
 		config.height = 600;
 		config.resizable = false;
+		config.foregroundFPS = 60;
 		config.addIcon("badlogic.jpg", Files.FileType.Internal);
 		new LwjglApplication(new Bolt(), config);
 	}

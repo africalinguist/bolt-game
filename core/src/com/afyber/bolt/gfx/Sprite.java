@@ -26,7 +26,7 @@ public class Sprite {
         this.targetY = y;
     }
 
-    public Sprite(String InternalPath, float x, float y, int width, int height) {
+    public Sprite(String InternalPath, float x, float y, float width, float height) {
         this.texture = new Texture(InternalPath);
         this.x = x;
         this.y = y;
@@ -38,6 +38,10 @@ public class Sprite {
 
     public Sprite(String InternalPath, String location) {
         this.texture = new Texture(InternalPath);
+
+    }
+
+    public Sprite() {
 
     }
 

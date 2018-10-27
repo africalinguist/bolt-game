@@ -13,20 +13,27 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.afyber.bolt.gfx.Sprite;
+import com.afyber.bolt.gfx.ScrollingSprite;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class Bolt extends Game implements InputProcessor {
 	SpriteBatch FrameBatch;
 	Sprite playerSprite;
 
+	private int screenWidth = 500;
+	private int screenHeight = 600;
+
 	private boolean playerShoot = false;
 
 	private int bulletTime = 0;
 
-	private ArrayList<Sprite> bullets = new ArrayList<Sprite>();
+	private int cloudWaitTime = 0;
+
+	private ArrayList<ScrollingSprite> bullets = new ArrayList<ScrollingSprite>();
+
+	private ArrayList<ScrollingSprite> clouds = new ArrayList<ScrollingSprite>();
 
 	private float playerSpeed = 10f;
 
@@ -48,39 +55,73 @@ public class Bolt extends Game implements InputProcessor {
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0.1f, 0.5f, 1.0f, 1.0f);
+		Gdx.gl.glClearColor(0.1f, 0.6f, 1.0f, 1.0f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		// Don't execute any logic if paused
 		if (!paused) {
 			bulletTime++;
+			cloudWaitTime--;
 
-			if (bulletTime >= 1000) {
+			if (bulletTime >= 25) {
 				if (playerShoot) {
-					bullets.add(new Sprite("/home/afyber/Documents/Pokeball 32x.png", playerSprite.x + 16, playerSprite.y + 64, 32, 32));
-
+					bullets.add(new ScrollingSprite("/home/afyber/Documents/Pokeball 32x.png", playerSprite.x + 16, playerSprite.y + 64, 32, 32, -500f));
 					bulletTime = 0;
 				}
 			}
 
+			if (cloudWaitTime <= 0) {
+				if ((int) (Math.random() * 200) == 1) {
+					float size = (float) (Math.random() * 3) + 0.5f;
+					int type = (int) (Math.random() * 3.999);
+
+					String path = "cloud1.png";
+
+					if (type == 2) {
+						path = "cloud1.png";
+					}
+					if (type == 1) {
+						path = "cloud2.png";
+					}
+					if (type == 3) {
+						path = "cloud3.png";
+					}
+
+					clouds.add(new ScrollingSprite(path, Math.round((float) Math.random() * screenWidth) - 30 * size, 690, 30 * size, 45 * size, (int)(100f * (Math.random() + 0.5f))));
+					cloudWaitTime = 50;
+				}
+			}
+
 			for (int i = 0; i < bullets.size(); i++) {
-				bullets.get(i).y += 500 * Gdx.graphics.getDeltaTime();
+				bullets.get(i).scroll();
+			}
+
+			for (int i = 0; i < clouds.size(); i++) {
+				clouds.get(i).scroll();
 			}
 
 			playerSprite.moveTowardsTarget(playerSpeed);
+
 		}
 
 		// Draw the things!
 		FrameBatch.begin();
 
+
+		for (int i = 0; i < clouds.size(); i++) {
+			clouds.get(i).draw(FrameBatch);
+		}
+
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets.get(i).draw(FrameBatch);
 		}
+
 		playerSprite.draw(FrameBatch);
 
 		if (paused) {
-			font.draw(FrameBatch, "Paused", 500/2-24, 600-100);
+			font.draw(FrameBatch, "Paused", screenWidth/2f-24, screenHeight-100);
 		}
+
 		FrameBatch.end();
 	}
 	
@@ -92,6 +133,10 @@ public class Bolt extends Game implements InputProcessor {
 
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets.get(i).texture.dispose();
+		}
+
+		for (int i = 0; i < clouds.size(); i++) {
+			clouds.get(i).texture.dispose();
 		}
 	}
 
@@ -147,6 +192,7 @@ public class Bolt extends Game implements InputProcessor {
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
 		playerSprite.setTarget(screenX - playerSprite.width/2, playerSprite.y);
+		playerShoot = true;
 		return false;
 	}
 
