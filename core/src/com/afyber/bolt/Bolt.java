@@ -42,6 +42,9 @@ public class Bolt extends Game implements InputProcessor {
 	private ArrayList<ScrollingEnemy> enemies = new ArrayList<ScrollingEnemy>();
 
 
+	private ScrollingEnemy drone;
+
+
 	boolean paused = false;
 
 	private BitmapFont font;
@@ -53,6 +56,11 @@ public class Bolt extends Game implements InputProcessor {
 		FrameBatch = new SpriteBatch();
 
 		font = new BitmapFont();
+
+		// Setup enemy templates
+		drone = new ScrollingEnemy("drone1.png", screenWidth/2f-32, 64, 64, 150f);
+
+		enemies.add(drone);
 
 		// Set input handling functions to the ones defined in this class
 		Gdx.input.setInputProcessor(this);
