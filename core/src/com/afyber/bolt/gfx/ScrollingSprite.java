@@ -3,6 +3,11 @@ package com.afyber.bolt.gfx;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 
+
+/** A class for sprites that only move up or down, like clouds
+ *
+ * @author afyber
+ */
 public class ScrollingSprite extends Sprite {
     protected float speed;
 
@@ -54,6 +59,10 @@ public class ScrollingSprite extends Sprite {
 
     }
 
+    /** Moves the sprite based on its speed
+     *
+     * @author afyber
+     */
     public void scroll() {
         this.y -= speed * Gdx.graphics.getDeltaTime();
     }

@@ -4,6 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+/** A class for sprites and things that need to move around the screen
+ *
+ * @author afyber
+ */
 public class Sprite {
     public Texture texture;
     public float x;
@@ -36,6 +40,7 @@ public class Sprite {
         this.targetY = y;
     }
 
+    // TODO: implement location
     public Sprite(String InternalPath, String location) {
         this.texture = new Texture(InternalPath);
 
@@ -45,27 +50,66 @@ public class Sprite {
 
     }
 
+    /** Draws the texture at its x and y
+     *
+     * @param batch the {@link SpriteBatch} to draw onto
+     *
+     * @author afyber
+     */
     public void draw(SpriteBatch batch) {
         draw(this.x, this.y, batch);
     }
 
+    /** Draws the texture onto the given {@link SpriteBatch}
+     *
+     * @param x x to draw at
+     * @param y y to draw at
+     * @param batch the {@link SpriteBatch} to draw onto
+     *
+     * @author afyber
+     */
     public void draw(float x, float y, SpriteBatch batch) {
         batch.draw(this.texture, x, y, this.width, this.height);
     }
 
+    /** Sets the target
+     *
+     * @param x what to set targetX to
+     * @param y what to set targetY to
+     *
+     * @author afyber
+     */
     public void setTarget(float x, float y) {
         targetX = x;
         targetY = y;
     }
 
+    /** Gets the targetX
+     *
+     * @return targetX
+     *
+     * @author afyber
+     */
     public float getTargetX() {
         return targetX;
     }
 
+    /** Gets the targetY
+     *
+     * @return targetY
+     *
+     * @author afyber
+     */
     public float getTargetY() {
         return targetY;
     }
 
+    /** Moves towards targetX and targetY
+     *
+     * @param speed how to quickly to move
+     *
+     * @author afyber
+     */
     public void moveTowardsTarget(float speed) {
         float newX = x + (targetX - x) * speed * Gdx.graphics.getDeltaTime();
         float newY = y + (targetY - y) * speed * Gdx.graphics.getDeltaTime();
@@ -75,14 +119,14 @@ public class Sprite {
         if (x < 0) {
             x = 0;
         }
-        if (x > 500 - this.texture.getWidth() * 2) {
-            x = 500 - this.texture.getWidth() * 2;
+        if (x > 500 - this.texture.getWidth() * 4) {
+            x = 500 - this.texture.getWidth() * 4;
         }
         if (y < 1) {
             y = 1;
         }
-        if (y > 600 - this.texture.getHeight() * 2) {
-            y = 600 - this.texture.getHeight() * 2;
+        if (y > 600 - this.texture.getHeight() * 4) {
+            y = 600 - this.texture.getHeight() * 4;
         }
     }
 }

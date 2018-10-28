@@ -20,8 +20,8 @@ import java.util.ArrayList;
 
 
 public class Bolt extends Game implements InputProcessor {
-	SpriteBatch FrameBatch;
-	Sprite playerSprite;
+	private SpriteBatch FrameBatch;
+	private Sprite playerSprite;
 
 	private int screenWidth = 500;
 	private int screenHeight = 600;
@@ -32,9 +32,11 @@ public class Bolt extends Game implements InputProcessor {
 
 	private int cloudWaitTime = 0;
 
+	// Used to hold all the player's bullets and all the clouds
 	private ArrayList<ScrollingSprite> playerBullets = new ArrayList<ScrollingSprite>();
 
 	private ArrayList<ScrollingSprite> clouds = new ArrayList<ScrollingSprite>();
+
 
 	private float playerSpeed = 10f;
 
@@ -66,7 +68,7 @@ public class Bolt extends Game implements InputProcessor {
 
 			if (bulletTime >= 25) {
 				if (playerShoot) {
-					playerBullets.add(new ScrollingSprite("playerBullet.png", playerSprite.x, playerSprite.y + 16, 64, 64, -500f));
+					playerBullets.add(new ScrollingSprite("playerBullet.png", playerSprite.x + 1, playerSprite.y + 16, 64, 64, -500f));
 					bulletTime = 0;
 				}
 			}
@@ -191,7 +193,6 @@ public class Bolt extends Game implements InputProcessor {
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
 		playerSprite.setTarget(screenX - playerSprite.width/2, playerSprite.y);
-		playerShoot = true;
 		return false;
 	}
 
