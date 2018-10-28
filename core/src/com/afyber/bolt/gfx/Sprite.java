@@ -10,8 +10,8 @@ public class Sprite {
     public float y;
     public float width;
     public float height;
-    float targetX;
-    float targetY;
+    protected float targetX;
+    protected float targetY;
 
     // Location of the sprite (i.e. North, SE, Center), overrides x and y, currently not in use
     String location;

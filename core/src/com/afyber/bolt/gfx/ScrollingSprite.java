@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 
 public class ScrollingSprite extends Sprite {
-    private float speed;
+    protected float speed;
 
     public ScrollingSprite(String InternalPath, float x, float speed) {
         this.texture = new Texture(InternalPath);
@@ -48,6 +48,10 @@ public class ScrollingSprite extends Sprite {
         this.targetX = x;
         this.targetY = y;
         this.speed = speed;
+    }
+
+    public ScrollingSprite() {
+
     }
 
     public void scroll() {
