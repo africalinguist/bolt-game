@@ -1,6 +1,7 @@
 package com.afyber.bolt;
 
 
+import com.afyber.bolt.entities.ScrollingEnemy;
 import com.badlogic.gdx.Game;
 
 // Input stuff
@@ -23,8 +24,8 @@ public class Bolt extends Game implements InputProcessor {
 	private SpriteBatch FrameBatch;
 	private Sprite playerSprite;
 
-	private int screenWidth = 500;
-	private int screenHeight = 600;
+	private static int screenWidth = 500;
+	private static int screenHeight = 600;
 
 	private boolean playerShoot = false;
 
@@ -32,13 +33,14 @@ public class Bolt extends Game implements InputProcessor {
 
 	private int cloudWaitTime = 0;
 
-	// Used to hold all the player's bullets and all the clouds
+
+	// Used to hold all the player's bullets and all the clouds and all the enemies
 	private ArrayList<ScrollingSprite> playerBullets = new ArrayList<ScrollingSprite>();
 
 	private ArrayList<ScrollingSprite> clouds = new ArrayList<ScrollingSprite>();
 
+	private ArrayList<ScrollingEnemy> enemies = new ArrayList<ScrollingEnemy>();
 
-	private float playerSpeed = 10f;
 
 	boolean paused = false;
 
@@ -63,13 +65,21 @@ public class Bolt extends Game implements InputProcessor {
 
 		// Don't execute any logic if paused
 		if (!paused) {
-			bulletTime++;
+			bulletTime--;
 			cloudWaitTime--;
 
-			if (bulletTime >= 25) {
+			for (int i = 0; i < playerBullets.size(); i++) {
+				if (playerBullets.get(i).y - playerBullets.get(i).height > screenHeight) {
+					playerBullets.get(i).texture.dispose();
+					playerBullets.remove(i);
+					if (i > 0) i--;
+				}
+			}
+
+			if (bulletTime <= 0 ) {
 				if (playerShoot) {
-					playerBullets.add(new ScrollingSprite("playerBullet.png", playerSprite.x + 1, playerSprite.y + 16, 64, 64, -500f));
-					bulletTime = 0;
+					playerBullets.add(new ScrollingSprite("playerBullet.png", playerSprite.x + 20, playerSprite.y + 16, 24, 48, -500f));
+					bulletTime = 25;
 				}
 			}
 
@@ -93,6 +103,7 @@ public class Bolt extends Game implements InputProcessor {
 				}
 			}
 
+
 			for (int i = 0; i < playerBullets.size(); i++) {
 				playerBullets.get(i).scroll();
 			}
@@ -101,7 +112,39 @@ public class Bolt extends Game implements InputProcessor {
 				clouds.get(i).scroll();
 			}
 
-			playerSprite.moveTowardsTarget(playerSpeed);
+			for (int i = 0; i < enemies.size(); i++) {
+				enemies.get(i).scroll();
+			}
+
+			playerSprite.moveTowardsTarget(10f);
+
+			for (int i = 0; i < playerBullets.size(); i++) {
+				for (int e = 0; e < enemies.size(); e++) {
+					if (i < playerBullets.size()) {
+						if (playerBullets.get(i).intersects(enemies.get(e)) && playerBullets.get(i).y < screenHeight) {
+							enemies.get(e).hurt();
+							playerBullets.get(i).texture.dispose();
+							playerBullets.remove(i);
+							if (e > 0) e--;
+							if (i > 0) i--;
+						}
+					}
+				}
+			}
+
+			for (int i = 0; i < enemies.size(); i++) {
+				if (playerSprite.intersects(enemies.get(i))) {
+					enemies.get(i).hurt();
+				}
+			}
+
+			for (int i = 0; i < enemies.size(); i++) {
+				if (enemies.get(i).health <= 0) {
+					enemies.get(i).texture.dispose();
+					enemies.remove(i);
+					if (i > 0) i--;
+				}
+			}
 
 		}
 
@@ -111,6 +154,10 @@ public class Bolt extends Game implements InputProcessor {
 
 		for (int i = 0; i < clouds.size(); i++) {
 			clouds.get(i).draw(FrameBatch);
+		}
+
+		for (int i = 0; i < enemies.size(); i++) {
+			enemies.get(i).draw(FrameBatch);
 		}
 
 		for (int i = 0; i < playerBullets.size(); i++) {
@@ -138,6 +185,10 @@ public class Bolt extends Game implements InputProcessor {
 
 		for (int i = 0; i < clouds.size(); i++) {
 			clouds.get(i).texture.dispose();
+		}
+
+		for (int i = 0; i < enemies.size(); i++) {
+			enemies.get(i).texture.dispose();
 		}
 	}
 

@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.awt.Rectangle;
+
 /** A class for sprites and things that need to move around the screen
  *
  * @author afyber
@@ -127,6 +129,25 @@ public class Sprite {
         }
         if (y > 600 - this.texture.getHeight() * 4) {
             y = 600 - this.texture.getHeight() * 4;
+        }
+    }
+
+    /** Checks if this sprite intersects with another based on width and height
+     *
+     * @param other the sprite to check for intersection
+     * @return true if they intersect, false if else
+     *
+     * @author afyber
+     */
+    public boolean intersects(Sprite other) {
+        Rectangle rect1 = new Rectangle((int)this.x, (int)this.y, (int)this.width, (int)this.height);
+        Rectangle rect2 = new Rectangle((int)other.x, (int)other.y, (int)other.width, (int)other.height);
+
+        if (rect1.intersects(rect2)) {
+            return true;
+        }
+        else {
+            return false;
         }
     }
 }
