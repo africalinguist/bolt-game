@@ -76,13 +76,6 @@ public class Bolt extends Game implements InputProcessor {
 			bulletTime--;
 			cloudWaitTime--;
 
-			for (int i = 0; i < playerBullets.size(); i++) {
-				if (playerBullets.get(i).y - playerBullets.get(i).height > screenHeight) {
-					playerBullets.get(i).texture.dispose();
-					playerBullets.remove(i);
-					if (i > 0) i--;
-				}
-			}
 
 			if (bulletTime <= 0 ) {
 				if (playerShoot) {
@@ -111,46 +104,43 @@ public class Bolt extends Game implements InputProcessor {
 				}
 			}
 
+			playerSprite.moveTowardsTarget(10f);
 
 			for (int i = 0; i < playerBullets.size(); i++) {
 				playerBullets.get(i).scroll();
+
+				if (playerBullets.get(i).y - playerBullets.get(i).height > screenHeight) {
+					playerBullets.get(i).texture.dispose();
+					playerBullets.remove(i);
+					if (i > 0) i--;
+				}
 			}
 
-			for (int i = 0; i < clouds.size(); i++) {
-				clouds.get(i).scroll();
+			for (ScrollingSprite cloud: clouds) {
+				cloud.scroll();
 			}
 
 			for (int i = 0; i < enemies.size(); i++) {
 				enemies.get(i).scroll();
-			}
 
-			playerSprite.moveTowardsTarget(10f);
-
-			for (int i = 0; i < playerBullets.size(); i++) {
-				for (int e = 0; e < enemies.size(); e++) {
-					if (i < playerBullets.size()) {
-						if (playerBullets.get(i).intersects(enemies.get(e)) && playerBullets.get(i).y < screenHeight) {
-							enemies.get(e).hurt();
-							playerBullets.get(i).texture.dispose();
-							playerBullets.remove(i);
-							if (e > 0) e--;
-							if (i > 0) i--;
-						}
-					}
-				}
-			}
-
-			for (int i = 0; i < enemies.size(); i++) {
 				if (playerSprite.intersects(enemies.get(i))) {
 					enemies.get(i).hurt();
 				}
-			}
 
-			for (int i = 0; i < enemies.size(); i++) {
 				if (enemies.get(i).health <= 0) {
 					enemies.get(i).texture.dispose();
 					enemies.remove(i);
 					if (i > 0) i--;
+				}
+
+				for (int p = 0; p < playerBullets.size(); p++) {
+					if (playerBullets.get(p).intersects(enemies.get(i)) && playerBullets.get(p).y < screenHeight) {
+						enemies.get(i).hurt();
+						playerBullets.get(p).texture.dispose();
+						playerBullets.remove(p);
+						if (p > 0) p--;
+						if (i > 0) i--;
+					}
 				}
 			}
 
@@ -160,16 +150,16 @@ public class Bolt extends Game implements InputProcessor {
 		FrameBatch.begin();
 
 
-		for (int i = 0; i < clouds.size(); i++) {
-			clouds.get(i).draw(FrameBatch);
+		for (ScrollingSprite cloud: clouds) {
+			cloud.draw(FrameBatch);
 		}
 
-		for (int i = 0; i < enemies.size(); i++) {
-			enemies.get(i).draw(FrameBatch);
+		for (ScrollingEnemy enemy: enemies) {
+			enemy.draw(FrameBatch);
 		}
 
-		for (int i = 0; i < playerBullets.size(); i++) {
-			playerBullets.get(i).draw(FrameBatch);
+		for (ScrollingSprite bullet: playerBullets) {
+			bullet.draw(FrameBatch);
 		}
 
 		playerSprite.draw(FrameBatch);
