@@ -3,7 +3,7 @@ package com.afyber.bolt.entities;
 import com.afyber.bolt.gfx.ScrollingSprite;
 import com.badlogic.gdx.graphics.Texture;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 /** A class for enemies that only moves up or down
  *

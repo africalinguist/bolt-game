@@ -9,7 +9,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Bolt";
-		config.width = 500;
+		config.width = 512;
 		config.height = 600;
 		config.resizable = false;
 		config.foregroundFPS = 60;
