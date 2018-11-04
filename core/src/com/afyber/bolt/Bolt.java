@@ -29,6 +29,10 @@ public class Bolt extends Game implements InputProcessor {
 
 	private boolean playerShoot = false;
 
+	private int playerHealth = 3;
+
+	private boolean playerDead = false;
+
 	private int bulletTime = 0;
 
 	private int cloudWaitTime = 0;
@@ -71,8 +75,8 @@ public class Bolt extends Game implements InputProcessor {
 		Gdx.gl.glClearColor(0.1f, 0.6f, 1.0f, 1.0f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		// Don't execute any logic if paused
-		if (!paused) {
+		// Don't execute any logic if paused or if the player is dead
+		if (!paused && !playerDead) {
 			bulletTime--;
 			cloudWaitTime--;
 			enemyTime--;
@@ -108,12 +112,25 @@ public class Bolt extends Game implements InputProcessor {
 			if (enemyTime <= 0) {
 				ScrollingEnemy newEnemy = new ScrollingEnemy("drone1.png", 12 + ((int)(Math.random() * (screenWidth - 64) / 64) * 64), 64, 64, 150f);
 
+
 				if (newEnemy.x > screenWidth) {
 					newEnemy.x = screenWidth - 76;
 				}
-
 				enemies.add(newEnemy);
 				enemyTime = 30 + (int)(Math.random() * 75);
+
+			}
+
+			if (playerHealth == 0) {
+				playerDead = true;
+			}
+
+			for (ScrollingSprite bullet: playerBullets) {
+				bullet.scroll();
+			}
+
+			for (ScrollingSprite cloud: clouds) {
+				cloud.scroll();
 			}
 
 			playerSprite.moveTowardsTarget(10f);
@@ -149,6 +166,7 @@ public class Bolt extends Game implements InputProcessor {
 
 				if (playerSprite.intersects(enemies.get(i))) {
 					enemies.get(i).hurt();
+					playerHealth--;
 				}
 
 				if (enemies.get(i).health <= 0) {
@@ -157,7 +175,6 @@ public class Bolt extends Game implements InputProcessor {
 					if (i > 0) i--;
 				}
 			}
-
 		}
 
 		// Draw the things!
@@ -180,6 +197,10 @@ public class Bolt extends Game implements InputProcessor {
 
 		if (paused) {
 			font.draw(FrameBatch, "Paused", screenWidth/2f-24, screenHeight-100);
+		}
+
+		if (playerDead) {
+			font.draw(FrameBatch, "You died!", screenWidth/2f-28, screenHeight-120);
 		}
 
 		FrameBatch.end();
@@ -219,11 +240,12 @@ public class Bolt extends Game implements InputProcessor {
 	@Override
 	public boolean keyDown(int keycode) {
 		if (keycode == Keys.ESCAPE) {
-			if (!paused) {
-				pause();
-			}
-			else {
-				resume();
+			if (!playerDead) {
+				if (!paused) {
+					pause();
+				} else {
+					resume();
+				}
 			}
 		}
 		return false;
