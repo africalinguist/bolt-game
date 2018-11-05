@@ -39,6 +39,8 @@ public class Bolt extends Game implements InputProcessor {
 
 	private int enemyTime = 40;
 
+	private int enemiesDead = 0;
+
 	// Used to hold all the player's bullets and all the clouds and all the enemies
 	private ArrayList<ScrollingSprite> playerBullets = new ArrayList<ScrollingSprite>();
 
@@ -110,8 +112,13 @@ public class Bolt extends Game implements InputProcessor {
 			}
 
 			if (enemyTime <= 0) {
-				ScrollingEnemy newEnemy = new ScrollingEnemy("drone1.png", 12 + ((int)(Math.random() * (screenWidth - 64) / 64) * 64), 64, 64, 150f);
+				ScrollingEnemy newEnemy = new ScrollingEnemy("drone1.png", 12 + ((int)(Math.random() * (screenWidth - 64) / 64) * 64), 64, 64, 150f + enemiesDead);
 
+				int type = (int) (Math.random() * 2.4);
+
+				if (type == 1) {
+					newEnemy = new ScrollingEnemy("heavy1.png", 24 + ((int)(Math.random() * (screenWidth - 96) / 96) * 96), 96, 96, 100f + (enemiesDead / 3));
+				}
 
 				if (newEnemy.x > screenWidth) {
 					newEnemy.x = screenWidth - 76;
@@ -172,6 +179,7 @@ public class Bolt extends Game implements InputProcessor {
 				if (enemies.get(i).health <= 0) {
 					enemies.get(i).texture.dispose();
 					enemies.remove(i);
+					enemiesDead++;
 					if (i > 0) i--;
 				}
 			}
