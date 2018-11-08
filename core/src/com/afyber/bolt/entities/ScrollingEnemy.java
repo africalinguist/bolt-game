@@ -1,9 +1,10 @@
 package com.afyber.bolt.entities;
 
 import com.afyber.bolt.gfx.ScrollingSprite;
-import com.badlogic.gdx.graphics.Texture;
+import com.afyber.bolt.gfx.Sprite;
 
 import java.awt.Rectangle;
+
 
 /** A class for enemies that only moves up or down
  *
@@ -15,50 +16,22 @@ public class ScrollingEnemy extends ScrollingSprite {
     public int health;
 
     public ScrollingEnemy(String InternalPath, float x, float speed) {
-        this.texture = new Texture(InternalPath);
-        this.x = x;
-        this.y = 700;
-        this.width = texture.getWidth();
-        this.height = texture.getHeight();
-        this.targetX = x;
-        this.targetY = y;
-        this.speed = speed;
+        super(InternalPath, x, speed);
         this.health = 1;
     }
 
     public ScrollingEnemy(String InternalPath, float x, float y, float speed) {
-        this.texture = new Texture(InternalPath);
-        this.x = x;
-        this.y = y;
-        this.width = texture.getWidth();
-        this.height = texture.getHeight();
-        this.targetX = x;
-        this.targetY = y;
-        this.speed = speed;
+        super(InternalPath, x, y, speed);
         this.health = 1;
     }
 
     public ScrollingEnemy(String InternalPath, float x, float width, float height, float speed) {
-        this.texture = new Texture(InternalPath);
-        this.x = x;
-        this.y = 700;
-        this.width = width;
-        this.height = height;
-        this.targetX = x;
-        this.targetY = y;
-        this.speed = speed;
+        super(InternalPath, x, width, height, speed);
         this.health = 1;
     }
 
     public ScrollingEnemy(String InternalPath, float x, float y, float width, float height, float speed) {
-        this.texture = new Texture(InternalPath);
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.targetX = x;
-        this.targetY = y;
-        this.speed = speed;
+        super(InternalPath, x, y, width, height, speed);
         this.health = 1;
     }
 
@@ -68,5 +41,67 @@ public class ScrollingEnemy extends ScrollingSprite {
      */
     public void hurt() {
         this.health--;
+    }
+
+    public Rectangle getCollisionBox() {
+        return new Rectangle((int)this.x + this.collisionBox.x, (int)this.y + this.collisionBox.y, (int)this.collisionBox.width, (int)this.collisionBox.height);
+    }
+
+    public void setCollisionBox(Rectangle rect) {
+        this.collisionBox = rect;
+    }
+
+    /** Checks for collision with another {@link ScrollingEnemy}
+     *
+     * @author afyber
+     */
+    public boolean intersects(ScrollingEnemy other) {
+        if (other.getCollisionBox() != null && this.getCollisionBox() != null) {
+            if (this.getCollisionBox().intersects(other.getCollisionBox())) {
+                return true;
+            }
+        } else {
+            Rectangle rect1 = new Rectangle((int)this.x, (int)this.y, (int)this.width, (int)this.height);
+            Rectangle rect2 = new Rectangle((int)other.x, (int)other.y, (int)other.width, (int)other.height);
+
+            if (rect1.intersects(rect2)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean intersects(ScrollingSprite other) {
+        Rectangle rect1 = new Rectangle((int)other.x, (int)other.y, (int)other.width, (int)other.height);
+
+        if (this.getCollisionBox() != null) {
+            if (this.getCollisionBox().intersects(rect1)) {
+                return true;
+            }
+        } else {
+            Rectangle rect2 = new Rectangle((int)this.x, (int)this.y, (int)this.width, (int)this.height);
+
+            if (rect2.intersects(rect1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean intersects(Sprite other) {
+        Rectangle rect1 = new Rectangle((int)other.x, (int)other.y, (int)other.width, (int)other.height);
+
+        if (this.getCollisionBox() != null) {
+            if (this.getCollisionBox().intersects(rect1)) {
+                return true;
+            }
+        } else {
+            Rectangle rect2 = new Rectangle((int)this.x, (int)this.y, (int)this.width, (int)this.height);
+
+            if (rect2.intersects(rect1)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

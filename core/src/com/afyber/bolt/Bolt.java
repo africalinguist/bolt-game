@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.afyber.bolt.gfx.Sprite;
 import com.afyber.bolt.gfx.ScrollingSprite;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 
@@ -62,7 +63,9 @@ public class Bolt extends Game implements InputProcessor {
 		font = new BitmapFont();
 
 		// needed for... stuff
-		enemies.add(new ScrollingEnemy("icon.png", 100, -64, 0));
+		ScrollingEnemy thing = new ScrollingEnemy("icon.png", 100, -64, 0);
+		thing.setCollisionBox(new Rectangle(0, 0, 64, 64));
+		enemies.add(thing);
 
 		// some enemy templates
 		// Drone: new ScrollingEnemy("drone1.png", screenWidth/2f-32, 64, 64, 150f)
@@ -113,11 +116,13 @@ public class Bolt extends Game implements InputProcessor {
 
 			if (enemyTime <= 0) {
 				ScrollingEnemy newEnemy = new ScrollingEnemy("drone1.png", 12 + ((int)(Math.random() * (screenWidth - 64) / 64) * 64), 64, 64, 150f + enemiesDead);
+				newEnemy.setCollisionBox(new Rectangle(4, 8, 56, 56));
 
 				int type = (int) (Math.random() * 2.4);
 
 				if (type == 1) {
-					newEnemy = new ScrollingEnemy("heavy1.png", 24 + ((int)(Math.random() * (screenWidth - 96) / 96) * 96), 96, 96, 100f + (enemiesDead / 3));
+					newEnemy = new ScrollingEnemy("heavy1.png", 24 + ((int)(Math.random() * (screenWidth - 96) / 96) * 96), 96, 96, 100f + (enemiesDead / 3f));
+					newEnemy.setCollisionBox(new Rectangle(8, 16, 80, 74));
 				}
 
 				if (newEnemy.x > screenWidth) {
@@ -144,7 +149,7 @@ public class Bolt extends Game implements InputProcessor {
 
 			for (int e = 0; e < enemies.size(); e++) {
 				for (int p = 0; p < playerBullets.size(); p++) {
-					if (playerBullets.get(p).intersects(enemies.get(e)) && playerBullets.get(p).y < screenHeight) {
+					if (enemies.get(e).intersects(playerBullets.get(p)) && playerBullets.get(p).y < screenHeight) {
 						enemies.get(e).hurt();
 						playerBullets.get(p).texture.dispose();
 						playerBullets.remove(p);
@@ -157,7 +162,7 @@ public class Bolt extends Game implements InputProcessor {
 			for (int i = 0; i < playerBullets.size(); i++) {
 				playerBullets.get(i).scroll();
 
-				if (playerBullets.get(i).y - playerBullets.get(i).height > screenHeight) {
+				if (playerBullets.get(i).y > screenHeight) {
 					playerBullets.get(i).texture.dispose();
 					playerBullets.remove(i);
 					if (i > 0) i--;
@@ -193,12 +198,12 @@ public class Bolt extends Game implements InputProcessor {
 			cloud.draw(FrameBatch);
 		}
 
-		for (ScrollingEnemy enemy: enemies) {
-			enemy.draw(FrameBatch);
-		}
-
 		for (ScrollingSprite bullet: playerBullets) {
 			bullet.draw(FrameBatch);
+		}
+
+		for (ScrollingEnemy enemy: enemies) {
+			enemy.draw(FrameBatch);
 		}
 
 		playerSprite.draw(FrameBatch);

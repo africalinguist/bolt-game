@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.awt.Rectangle;
 
+
 /** A class for sprites and things that need to move around the screen
  *
  * @author afyber
@@ -45,10 +46,6 @@ public class Sprite {
     // TODO: implement location
     public Sprite(String InternalPath, String location) {
         this.texture = new Texture(InternalPath);
-
-    }
-
-    public Sprite() {
 
     }
 
@@ -146,8 +143,8 @@ public class Sprite {
         if (rect1.intersects(rect2)) {
             return true;
         }
-        else {
-            return false;
-        }
+
+        return false;
+
     }
 }
