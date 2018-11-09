@@ -50,6 +50,8 @@ public class Bolt extends Game implements InputProcessor {
 	private ArrayList<ScrollingEnemy> enemies = new ArrayList<ScrollingEnemy>();
 
 
+	private Sprite heart;
+
 	boolean paused = false;
 
 	private BitmapFont font;
@@ -57,6 +59,8 @@ public class Bolt extends Game implements InputProcessor {
 	@Override
 	public void create () {
 		playerSprite = new Sprite("playerShip.png", 228, 100, 64, 64);
+
+		heart = new Sprite("heart.png", screenWidth - 38, screenHeight - 38, 32, 32);
 
 		FrameBatch = new SpriteBatch();
 
@@ -204,6 +208,18 @@ public class Bolt extends Game implements InputProcessor {
 
 		for (ScrollingEnemy enemy: enemies) {
 			enemy.draw(FrameBatch);
+		}
+
+
+		if (playerHealth > 0) {
+			heart.draw(FrameBatch);
+			if (playerHealth == 2) {
+				heart.draw(heart.x - 38, heart.y, FrameBatch);
+			}
+			if (playerHealth == 3) {
+				heart.draw(heart.x - 76, heart.y, FrameBatch);
+				heart.draw(heart.x - 38, heart.y, FrameBatch);
+			}
 		}
 
 		playerSprite.draw(FrameBatch);
