@@ -122,12 +122,18 @@ public class Bolt extends Game implements InputProcessor {
 				ScrollingEnemy newEnemy = new ScrollingEnemy("drone1.png", 12 + ((int)(Math.random() * (screenWidth - 64) / 64) * 64), 64, 64, 150f + enemiesDead);
 				newEnemy.setCollisionBox(new Rectangle(4, 8, 56, 56));
 
-				int type = (int) (Math.random() * 2.4);
+				int type = (int) (Math.random() * 3.4);
 
 				if (type == 1) {
 					newEnemy = new ScrollingEnemy("heavy1.png", 24 + ((int)(Math.random() * (screenWidth - 96) / 96) * 96), 96, 96, 100f + (enemiesDead / 3f));
 					newEnemy.setCollisionBox(new Rectangle(8, 16, 80, 74));
 					newEnemy.health = 3;
+				}
+
+				if (type == 2) {
+					newEnemy = new ScrollingEnemy("ship1.png", 12 + ((int)(Math.random() * (screenWidth - 64) / 64) * 64), 64, 64, 200f + (enemiesDead / 4f));
+					newEnemy.setCollisionBox(new Rectangle(4, 8, 56, 48));
+					newEnemy.health = 2;
 				}
 
 				if (newEnemy.x > screenWidth) {
