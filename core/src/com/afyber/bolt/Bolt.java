@@ -17,7 +17,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.afyber.bolt.gfx.Sprite;
 import com.afyber.bolt.gfx.ScrollingSprite;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 
 
