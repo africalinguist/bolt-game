@@ -1,6 +1,7 @@
 package com.afyber.bolt;
 
 
+import com.afyber.bolt.entities.Player;
 import com.afyber.bolt.entities.ScrollingEnemy;
 import com.badlogic.gdx.Game;
 
@@ -23,16 +24,12 @@ import java.util.ArrayList;
 
 public class Bolt extends Game implements InputProcessor {
 	private SpriteBatch FrameBatch;
-	private Sprite playerSprite;
+	private Player player;
 
 	private static int screenWidth = 512;
 	private static int screenHeight = 600;
 
 	private boolean playerShoot = false;
-
-	private int playerHealth = 3;
-
-	private boolean playerDead = false;
 
 	private int bulletTime = 0;
 
@@ -58,7 +55,7 @@ public class Bolt extends Game implements InputProcessor {
 	
 	@Override
 	public void create () {
-		playerSprite = new Sprite("playerShip.png", 228, 100, 64, 64);
+		player = new Player(228, 100, 64, 64, new Rectangle(6, 6, 52, 52));
 
 		heart = new Sprite("heart.png", screenWidth - 38, screenHeight - 38, 32, 32);
 
@@ -85,7 +82,7 @@ public class Bolt extends Game implements InputProcessor {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		// Don't execute any logic if paused or if the player is dead
-		if (!paused && !playerDead) {
+		if (!paused && !player.isDead()) {
 			bulletTime--;
 			cloudWaitTime--;
 			enemyTime--;
@@ -93,7 +90,7 @@ public class Bolt extends Game implements InputProcessor {
 
 			if (bulletTime <= 0 ) {
 				if (playerShoot) {
-					playerBullets.add(new ScrollingSprite("playerBullet.png", playerSprite.x + 20, playerSprite.y + 16, 24, 48, -500f));
+					playerBullets.add(new ScrollingSprite("playerBullet.png", player.x + 20, player.y + 16, 24, 48, -500f));
 					bulletTime = 25;
 				}
 			}
@@ -144,10 +141,6 @@ public class Bolt extends Game implements InputProcessor {
 
 			}
 
-			if (playerHealth == 0) {
-				playerDead = true;
-			}
-
 			for (ScrollingSprite bullet: playerBullets) {
 				bullet.scroll();
 			}
@@ -156,7 +149,7 @@ public class Bolt extends Game implements InputProcessor {
 				cloud.scroll();
 			}
 
-			playerSprite.moveTowardsTarget(10f);
+			player.moveTowardsTarget(10f);
 
 			for (int e = 0; e < enemies.size(); e++) {
 				for (int p = 0; p < playerBullets.size(); p++) {
@@ -187,9 +180,9 @@ public class Bolt extends Game implements InputProcessor {
 			for (int i = 0; i < enemies.size(); i++) {
 				enemies.get(i).scroll();
 
-				if (playerSprite.intersects(enemies.get(i))) {
+				if (player.intersects(enemies.get(i))) {
 					enemies.get(i).hurt();
-					playerHealth--;
+					player.hurt();
 				}
 
 				if (enemies.get(i).health <= 0) {
@@ -218,24 +211,24 @@ public class Bolt extends Game implements InputProcessor {
 		}
 
 
-		if (playerHealth > 0) {
+		if (player.health > 0) {
 			heart.draw(FrameBatch);
-			if (playerHealth == 2) {
+			if (player.health == 2) {
 				heart.draw(heart.x - 38, heart.y, FrameBatch);
 			}
-			if (playerHealth == 3) {
+			if (player.health == 3) {
 				heart.draw(heart.x - 76, heart.y, FrameBatch);
 				heart.draw(heart.x - 38, heart.y, FrameBatch);
 			}
 		}
 
-		playerSprite.draw(FrameBatch);
+		player.draw(FrameBatch);
 
 		if (paused) {
 			font.draw(FrameBatch, "Paused", screenWidth/2f-24, screenHeight-100);
 		}
 
-		if (playerDead) {
+		if (player.isDead()) {
 			font.draw(FrameBatch, "You died!", screenWidth/2f-28, screenHeight-120);
 		}
 
@@ -244,7 +237,7 @@ public class Bolt extends Game implements InputProcessor {
 	
 	@Override
 	public void dispose () {
-		playerSprite.texture.dispose();
+		player.texture.dispose();
 		FrameBatch.dispose();
 		font.dispose();
 
@@ -276,7 +269,7 @@ public class Bolt extends Game implements InputProcessor {
 	@Override
 	public boolean keyDown(int keycode) {
 		if (keycode == Keys.ESCAPE) {
-			if (!playerDead) {
+			if (!player.isDead()) {
 				if (!paused) {
 					pause();
 				} else {
@@ -299,27 +292,27 @@ public class Bolt extends Game implements InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		playerSprite.setTarget(screenX - playerSprite.width/2, playerSprite.y);
+		player.setTarget(screenX - player.width/2, player.y);
 		playerShoot = true;
 		return false;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		playerSprite.setTarget(screenX - playerSprite.width/2, playerSprite.y);
+		player.setTarget(screenX - player.width/2, player.y);
 		playerShoot = false;
 		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		playerSprite.setTarget(screenX - playerSprite.width/2, playerSprite.y);
+		player.setTarget(screenX - player.width/2, player.y);
 		return false;
 	}
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
-		playerSprite.setTarget(screenX - playerSprite.width/2, playerSprite.y);
+		player.setTarget(screenX - player.width/2, player.y);
 		return false;
 	}
 
