@@ -1,6 +1,7 @@
 package com.afyber.bolt.entities;
 
 import com.afyber.bolt.gfx.Sprite;
+import com.badlogic.gdx.graphics.Texture;
 
 import java.awt.Rectangle;
 
@@ -10,34 +11,34 @@ public class Player extends Sprite {
     public int health;
 
     public Player() {
-        super("playerShip.png", 228, 100);
+        super(new Texture("playerShip.png"), 228, 100);
         this.health = 3;
     }
 
     public Player(Rectangle collisionBox) {
-        super("playerShip.png", 228, 100);
+        super(new Texture("playerShip.png"), 228, 100);
         this.collisionBox = collisionBox;
         this.health = 3;
     }
 
     public Player(int x, int y) {
-        super("playerShip.png", x, y);
+        super(new Texture("playerShip.png"), x, y);
         this.health = 3;
     }
 
     public Player(int x, int y, Rectangle collisionBox) {
-        super("playerShip.png", x, y);
+        super(new Texture("playerShip.png"), x, y);
         this.collisionBox = collisionBox;
         this.health = 3;
     }
 
     public Player(int x, int y, int width, int height) {
-        super("playerShip.png", x, y, width, height);
+        super(new Texture("playerShip.png"), x, y, width, height);
         this.health = 3;
     }
 
     public Player(int x, int y, int width, int height, Rectangle collisionBox) {
-        super("playerShip.png", x, y, width, height);
+        super(new Texture("playerShip.png"), x, y, width, height);
         this.collisionBox = collisionBox;
         this.health = 3;
     }

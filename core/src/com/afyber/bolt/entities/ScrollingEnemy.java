@@ -2,6 +2,7 @@ package com.afyber.bolt.entities;
 
 import com.afyber.bolt.gfx.ScrollingSprite;
 import com.afyber.bolt.gfx.Sprite;
+import com.badlogic.gdx.graphics.Texture;
 
 import java.awt.Rectangle;
 
@@ -15,23 +16,23 @@ public class ScrollingEnemy extends ScrollingSprite {
     private Rectangle collisionBox;
     public int health;
 
-    public ScrollingEnemy(String InternalPath, float x, float speed) {
-        super(InternalPath, x, speed);
+    public ScrollingEnemy(Texture texture, float x, float speed) {
+        super(texture, x, speed);
         this.health = 1;
     }
 
-    public ScrollingEnemy(String InternalPath, float x, float y, float speed) {
-        super(InternalPath, x, y, speed);
+    public ScrollingEnemy(Texture texture, float x, float y, float speed) {
+        super(texture, x, y, speed);
         this.health = 1;
     }
 
-    public ScrollingEnemy(String InternalPath, float x, float width, float height, float speed) {
-        super(InternalPath, x, width, height, speed);
+    public ScrollingEnemy(Texture texture, float x, float width, float height, float speed) {
+        super(texture, x, width, height, speed);
         this.health = 1;
     }
 
-    public ScrollingEnemy(String InternalPath, float x, float y, float width, float height, float speed) {
-        super(InternalPath, x, y, width, height, speed);
+    public ScrollingEnemy(Texture texture, float x, float y, float width, float height, float speed) {
+        super(texture, x, y, width, height, speed);
         this.health = 1;
     }
 

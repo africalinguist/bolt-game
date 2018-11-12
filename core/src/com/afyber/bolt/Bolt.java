@@ -3,6 +3,7 @@ package com.afyber.bolt;
 
 import com.afyber.bolt.entities.Player;
 import com.afyber.bolt.entities.ScrollingEnemy;
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Game;
 
 // Input stuff
@@ -12,8 +13,10 @@ import com.badlogic.gdx.Input.Keys;
 // Graphics imports
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.assets.AssetManager;
 
 import com.afyber.bolt.gfx.Sprite;
 import com.afyber.bolt.gfx.ScrollingSprite;
@@ -46,6 +49,7 @@ public class Bolt extends Game implements InputProcessor {
 
 	private ArrayList<ScrollingEnemy> enemies = new ArrayList<ScrollingEnemy>();
 
+	public AssetManager assetManager;
 
 	private Sprite heart;
 
@@ -55,16 +59,19 @@ public class Bolt extends Game implements InputProcessor {
 	
 	@Override
 	public void create () {
+		assetManager = new AssetManager();
+		loadAssets(assetManager);
+
 		player = new Player(228, 100, 64, 64, new Rectangle(6, 6, 52, 52));
 
-		heart = new Sprite("heart.png", screenWidth - 38, screenHeight - 38, 32, 32);
+		heart = new Sprite((Texture)assetManager.get("heart.png"), screenWidth - 38, screenHeight - 38, 32, 32);
 
 		FrameBatch = new SpriteBatch();
 
 		font = new BitmapFont();
 
 		// needed for... stuff
-		ScrollingEnemy thing = new ScrollingEnemy("icon.png", 100, -64, 0);
+		ScrollingEnemy thing = new ScrollingEnemy((Texture)assetManager.get("icon.png"), 100, -64, 0);
 		thing.setCollisionBox(new Rectangle(0, 0, 64, 64));
 		enemies.add(thing);
 
@@ -90,7 +97,7 @@ public class Bolt extends Game implements InputProcessor {
 
 			if (bulletTime <= 0 ) {
 				if (playerShoot) {
-					playerBullets.add(new ScrollingSprite("playerBullet.png", player.x + 20, player.y + 16, 24, 48, -500f));
+					playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x + 20, player.y + 16, 24, 48, -500f));
 					bulletTime = 25;
 				}
 			}
@@ -110,25 +117,25 @@ public class Bolt extends Game implements InputProcessor {
 						path = "cloud2.png";
 					}
 
-					clouds.add(new ScrollingSprite(path, Math.round((float) Math.random() * screenWidth) - 30 * size, 30 * size, 40 * size, 33.3f * size));
+					clouds.add(new ScrollingSprite((Texture)assetManager.get(path), Math.round((float) Math.random() * screenWidth) - 30 * size, 30 * size, 40 * size, 33.3f * size));
 					cloudWaitTime = 50;
 				}
 			}
 
 			if (enemyTime <= 0) {
-				ScrollingEnemy newEnemy = new ScrollingEnemy("drone1.png", 12 + ((int)(Math.random() * (screenWidth - 64) / 64) * 64), 64, 64, 150f + enemiesDead);
+				ScrollingEnemy newEnemy = new ScrollingEnemy((Texture)assetManager.get("drone1.png"), 12 + ((int)(Math.random() * (screenWidth - 64) / 64) * 64), 64, 64, 150f + enemiesDead);
 				newEnemy.setCollisionBox(new Rectangle(4, 8, 56, 56));
 
 				int type = (int) (Math.random() * 3.4);
 
 				if (type == 1) {
-					newEnemy = new ScrollingEnemy("heavy1.png", 24 + ((int)(Math.random() * (screenWidth - 96) / 96) * 96), 96, 96, 100f + (enemiesDead / 3f));
+					newEnemy = new ScrollingEnemy((Texture)assetManager.get("heavy1.png"), 24 + ((int)(Math.random() * (screenWidth - 96) / 96) * 96), 96, 96, 100f + (enemiesDead / 3f));
 					newEnemy.setCollisionBox(new Rectangle(8, 16, 80, 74));
 					newEnemy.health = 3;
 				}
 
 				if (type == 2) {
-					newEnemy = new ScrollingEnemy("ship1.png", 12 + ((int)(Math.random() * (screenWidth - 64) / 64) * 64), 64, 64, 200f + (enemiesDead / 4f));
+					newEnemy = new ScrollingEnemy((Texture)assetManager.get("ship1.png"), 12 + ((int)(Math.random() * (screenWidth - 64) / 64) * 64), 64, 64, 200f + (enemiesDead / 4f));
 					newEnemy.setCollisionBox(new Rectangle(4, 8, 56, 48));
 					newEnemy.health = 2;
 				}
@@ -155,7 +162,6 @@ public class Bolt extends Game implements InputProcessor {
 				for (int p = 0; p < playerBullets.size(); p++) {
 					if (enemies.get(e).intersects(playerBullets.get(p)) && playerBullets.get(p).y < screenHeight) {
 						enemies.get(e).hurt();
-						playerBullets.get(p).texture.dispose();
 						playerBullets.remove(p);
 						if (p > 0) p--;
 						if (e > 0) e--;
@@ -167,7 +173,6 @@ public class Bolt extends Game implements InputProcessor {
 				playerBullets.get(i).scroll();
 
 				if (playerBullets.get(i).y > screenHeight) {
-					playerBullets.get(i).texture.dispose();
 					playerBullets.remove(i);
 					if (i > 0) i--;
 				}
@@ -186,7 +191,6 @@ public class Bolt extends Game implements InputProcessor {
 				}
 
 				if (enemies.get(i).health <= 0) {
-					enemies.get(i).texture.dispose();
 					enemies.remove(i);
 					enemiesDead++;
 					if (i > 0) i--;
@@ -241,17 +245,7 @@ public class Bolt extends Game implements InputProcessor {
 		FrameBatch.dispose();
 		font.dispose();
 
-		for (ScrollingSprite bullet: playerBullets) {
-			bullet.texture.dispose();
-		}
-
-		for (ScrollingSprite cloud: clouds) {
-			cloud.texture.dispose();
-		}
-
-		for (ScrollingEnemy enemy: enemies) {
-			enemy.texture.dispose();
-		}
+		assetManager.dispose();
 	}
 
 	@Override
@@ -262,6 +256,28 @@ public class Bolt extends Game implements InputProcessor {
 	@Override
 	public void resume() {
 		paused = false;
+	}
+
+	private void loadAssets(AssetManager manager) {
+		// Load the player
+		manager.load("playerShip.png", Texture.class);
+		manager.load("playerBullet.png", Texture.class);
+
+		// Clouds
+		manager.load("cloud1.png", Texture.class);
+		manager.load("cloud2.png", Texture.class);
+		manager.load("cloud3.png", Texture.class);
+
+		// Load enemies
+		manager.load("drone1.png", Texture.class);
+		manager.load("heavy1.png", Texture.class);
+		manager.load("ship1.png", Texture.class);
+
+		// Misc
+		manager.load("icon.png", Texture.class);
+		manager.load("heart.png", Texture.class);
+
+		manager.finishLoading();
 	}
 
 	// For InputProcessor

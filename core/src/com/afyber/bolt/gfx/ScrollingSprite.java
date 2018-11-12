@@ -1,6 +1,7 @@
 package com.afyber.bolt.gfx;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 
 
 /** A class for sprites that only move up or down, like clouds
@@ -10,23 +11,23 @@ import com.badlogic.gdx.Gdx;
 public class ScrollingSprite extends Sprite {
     protected float speed;
 
-    public ScrollingSprite(String InternalPath, float x, float speed) {
-        super(InternalPath, x, 700);
+    public ScrollingSprite(Texture texture, float x, float speed) {
+        super(texture, x, 700);
         this.speed = speed;
     }
 
-    public ScrollingSprite(String InternalPath, float x, float y, float speed) {
-        super(InternalPath, x, y);
+    public ScrollingSprite(Texture texture, float x, float y, float speed) {
+        super(texture, x, y);
         this.speed = speed;
     }
 
-    public ScrollingSprite(String InternalPath, float x, float width, float height, float speed) {
-        super(InternalPath, x, 700f, width, height);
+    public ScrollingSprite(Texture texture, float x, float width, float height, float speed) {
+        super(texture, x, 700f, width, height);
         this.speed = speed;
     }
 
-    public ScrollingSprite(String InternalPath, float x, float y, float width, float height, float speed) {
-        super(InternalPath, x, y, width, height);
+    public ScrollingSprite(Texture texture, float x, float y, float width, float height, float speed) {
+        super(texture, x, y, width, height);
         this.speed = speed;
     }
 
