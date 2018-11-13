@@ -23,8 +23,8 @@ public class Sprite {
     // Location of the sprite (i.e. North, SE, Center), overrides x and y, currently not in use
     String location;
 
-    public Sprite(String InternalPath, float x, float y) {
-        this.texture = new Texture(InternalPath);
+    public Sprite(Texture texture, float x, float y) {
+        this.texture = texture;
         this.x = x;
         this.y = y;
         this.width = texture.getWidth();
@@ -33,8 +33,8 @@ public class Sprite {
         this.targetY = y;
     }
 
-    public Sprite(String InternalPath, float x, float y, float width, float height) {
-        this.texture = new Texture(InternalPath);
+    public Sprite(Texture texture, float x, float y, float width, float height) {
+        this.texture = texture;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -44,8 +44,8 @@ public class Sprite {
     }
 
     // TODO: implement location
-    public Sprite(String InternalPath, String location) {
-        this.texture = new Texture(InternalPath);
+    public Sprite(Texture texture, String location) {
+        this.texture = texture;
 
     }
 
