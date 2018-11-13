@@ -42,6 +42,8 @@ public class Bolt extends Game implements InputProcessor {
 
 	private int enemiesDead = 0;
 
+	private int mothershipHealth = 60;
+
 	// Used to hold all the player's bullets and all the clouds and all the enemies
 	private ArrayList<ScrollingSprite> playerBullets = new ArrayList<ScrollingSprite>();
 
@@ -49,11 +51,13 @@ public class Bolt extends Game implements InputProcessor {
 
 	private ArrayList<ScrollingEnemy> enemies = new ArrayList<ScrollingEnemy>();
 
-	public AssetManager assetManager;
+	private AssetManager assetManager;
 
 	private Sprite heart;
 
-	boolean paused = false;
+	private Sprite progressBar;
+
+	private boolean paused = false;
 
 	private BitmapFont font;
 	
@@ -64,19 +68,18 @@ public class Bolt extends Game implements InputProcessor {
 
 		player = new Player(228, 100, 64, 64, new Rectangle(6, 6, 52, 52));
 
-		heart = new Sprite((Texture)assetManager.get("heart.png"), screenWidth - 38, screenHeight - 38, 32, 32);
+		heart = new Sprite((Texture)assetManager.get("heart.png"), screenWidth - 38, screenHeight - 44, 32, 32);
+
+		progressBar = new Sprite((Texture)assetManager.get("progressBarSection.png"), 0, screenHeight - 6, screenWidth / mothershipHealth, 12);
 
 		FrameBatch = new SpriteBatch();
 
 		font = new BitmapFont();
 
 		// needed for... stuff
-		ScrollingEnemy thing = new ScrollingEnemy((Texture)assetManager.get("icon.png"), 100, -64, 0);
+		ScrollingEnemy thing = new ScrollingEnemy((Texture)assetManager.get("icon.png"), -64, 0, 0);
 		thing.setCollisionBox(new Rectangle(0, 0, 64, 64));
 		enemies.add(thing);
-
-		// some enemy templates
-		// Drone: new ScrollingEnemy("drone1.png", screenWidth/2f-32, 64, 64, 150f)
 
 
 		// Set input handling functions to the ones defined in this class
@@ -88,8 +91,8 @@ public class Bolt extends Game implements InputProcessor {
 		Gdx.gl.glClearColor(0.1f, 0.6f, 1.0f, 1.0f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		// Don't execute any logic if paused or if the player is dead
-		if (!paused && !player.isDead()) {
+		// Don't execute any logic if paused or if the player is dead or if the ship is dead
+		if (!paused && !player.isDead() && mothershipHealth > 0) {
 			bulletTime--;
 			cloudWaitTime--;
 			enemyTime--;
@@ -158,16 +161,6 @@ public class Bolt extends Game implements InputProcessor {
 
 			player.moveTowardsTarget(10f);
 
-			for (int e = 0; e < enemies.size(); e++) {
-				for (int p = 0; p < playerBullets.size(); p++) {
-					if (enemies.get(e).intersects(playerBullets.get(p)) && playerBullets.get(p).y < screenHeight) {
-						enemies.get(e).hurt();
-						playerBullets.remove(p);
-						if (p > 0) p--;
-						if (e > 0) e--;
-					}
-				}
-			}
 
 			for (int i = 0; i < playerBullets.size(); i++) {
 				playerBullets.get(i).scroll();
@@ -182,18 +175,35 @@ public class Bolt extends Game implements InputProcessor {
 				cloud.scroll();
 			}
 
-			for (int i = 0; i < enemies.size(); i++) {
-				enemies.get(i).scroll();
+			for (int e = 0; e < enemies.size(); e++) {
+				enemies.get(e).scroll();
 
-				if (player.intersects(enemies.get(i))) {
-					enemies.get(i).hurt();
+				if (player.intersects(enemies.get(e))) {
+					enemies.get(e).hurt();
 					player.hurt();
 				}
 
-				if (enemies.get(i).health <= 0) {
-					enemies.remove(i);
+				if (enemies.get(e).health <= 0) {
+					enemies.remove(e);
 					enemiesDead++;
-					if (i > 0) i--;
+					if (e > 0) e--;
+				}
+
+				if (enemies.get(e).y + 96 < 0) {
+					mothershipHealth -= enemies.get(e).health;
+					enemies.remove(e);
+					if (e > 0) e--;
+				}
+			}
+
+			for (int e = 0; e < enemies.size(); e++) {
+				for (int p = 0; p < playerBullets.size(); p++) {
+					if (enemies.get(e).intersects(playerBullets.get(p)) && playerBullets.get(p).y < screenHeight) {
+						enemies.get(e).hurt();
+						playerBullets.remove(p);
+						if (p > 0) p--;
+						if (e > 0) e--;
+					}
 				}
 			}
 		}
@@ -224,6 +234,14 @@ public class Bolt extends Game implements InputProcessor {
 				heart.draw(heart.x - 76, heart.y, FrameBatch);
 				heart.draw(heart.x - 38, heart.y, FrameBatch);
 			}
+		}
+
+		if (mothershipHealth > 0) {
+			for (int i = 0; i < mothershipHealth + mothershipHealth / 10; i++) {
+				progressBar.draw((i * progressBar.width), progressBar.y, FrameBatch);
+			}
+		} else {
+			font.draw(FrameBatch, "Ship destroyed!", screenWidth/2f-44, screenHeight-140);
 		}
 
 		player.draw(FrameBatch);
@@ -276,6 +294,7 @@ public class Bolt extends Game implements InputProcessor {
 		// Misc
 		manager.load("icon.png", Texture.class);
 		manager.load("heart.png", Texture.class);
+		manager.load("progressBarSection.png", Texture.class);
 
 		manager.finishLoading();
 	}
@@ -309,6 +328,9 @@ public class Bolt extends Game implements InputProcessor {
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		player.setTarget(screenX - player.width/2, player.y);
+		if (bulletTime < 10) {
+			bulletTime = 1;
+		}
 		playerShoot = true;
 		return false;
 	}
