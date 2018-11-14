@@ -2,6 +2,7 @@ package com.afyber.bolt;
 
 
 import com.afyber.bolt.entities.Player;
+import com.afyber.bolt.entities.Powerup;
 import com.afyber.bolt.entities.ScrollingEnemy;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Game;
@@ -44,12 +45,16 @@ public class Bolt extends Game implements InputProcessor {
 
 	private int mothershipHealth = 60;
 
-	// Used to hold all the player's bullets and all the clouds and all the enemies
+	// Used to hold all the player's bullets and all the clouds and all the enemies and the powerups
 	private ArrayList<ScrollingSprite> playerBullets = new ArrayList<ScrollingSprite>();
 
 	private ArrayList<ScrollingSprite> clouds = new ArrayList<ScrollingSprite>();
 
 	private ArrayList<ScrollingEnemy> enemies = new ArrayList<ScrollingEnemy>();
+
+	private ArrayList<Powerup> powerups = new ArrayList<Powerup>();
+
+	private String activePowerups = "";
 
 	private AssetManager assetManager;
 
@@ -100,8 +105,18 @@ public class Bolt extends Game implements InputProcessor {
 
 			if (bulletTime <= 0 ) {
 				if (playerShoot) {
-					playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x + 20, player.y + 16, 24, 48, -500f));
-					bulletTime = 25;
+					if (!activePowerups.contains("doubleShoot")) {
+						playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x + 20, player.y + 16, 24, 48, -500f));
+					} else {
+						playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x + 4, player.y + 16, 24, 48, -500f));
+						playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x + 36, player.y + 16, 24, 48, -500f));
+					}
+
+					if (!activePowerups.contains("speedShoot")) {
+						bulletTime = 25;
+					} else {
+						bulletTime = 10;
+					}
 				}
 			}
 
@@ -175,6 +190,10 @@ public class Bolt extends Game implements InputProcessor {
 				cloud.scroll();
 			}
 
+			for (ScrollingSprite powerup: powerups) {
+				powerup.scroll();
+			}
+
 			for (int e = 0; e < enemies.size(); e++) {
 				enemies.get(e).scroll();
 
@@ -184,6 +203,7 @@ public class Bolt extends Game implements InputProcessor {
 				}
 
 				if (enemies.get(e).health <= 0) {
+					randomLoot(enemies.get(e));
 					enemies.remove(e);
 					enemiesDead++;
 					if (e > 0) e--;
@@ -193,6 +213,14 @@ public class Bolt extends Game implements InputProcessor {
 					mothershipHealth -= enemies.get(e).health;
 					enemies.remove(e);
 					if (e > 0) e--;
+				}
+			}
+
+			for (int p = 0; p < powerups.size(); p++) {
+				if (powerups.get(p).intersects(player)) {
+					activePowerups += powerups.get(p).type;
+					powerups.remove(p);
+					if (p > 0) p--;
 				}
 			}
 
@@ -222,6 +250,10 @@ public class Bolt extends Game implements InputProcessor {
 
 		for (ScrollingEnemy enemy: enemies) {
 			enemy.draw(FrameBatch);
+		}
+
+		for (ScrollingSprite powerup: powerups) {
+			powerup.draw(FrameBatch);
 		}
 
 
@@ -296,7 +328,22 @@ public class Bolt extends Game implements InputProcessor {
 		manager.load("heart.png", Texture.class);
 		manager.load("progressBarSection.png", Texture.class);
 
+		// Power Ups
+		manager.load("powerup1.png", Texture.class);
+		manager.load("powerup2.png", Texture.class);
+
 		manager.finishLoading();
+	}
+
+	private void randomLoot(ScrollingEnemy enemy) {
+		double random = Math.random() * 100;
+
+		if (random > 95 && enemiesDead > 70) {
+			powerups.add(new Powerup((Texture) assetManager.get("powerup1.png"), enemy.x + enemy.width / 2 - 17, enemy.y, 34, 34, "speedShoot "));
+		}
+		if (random > 92.5 && enemiesDead > 33) {
+			powerups.add(new Powerup((Texture)assetManager.get("powerup2.png"), enemy.x + enemy.width / 2 - 17, enemy.y, 34, 34, "doubleShoot "));
+		}
 	}
 
 	// For InputProcessor
@@ -329,7 +376,7 @@ public class Bolt extends Game implements InputProcessor {
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		player.setTarget(screenX - player.width/2, player.y);
 		if (bulletTime < 10) {
-			bulletTime = 1;
+			bulletTime = 0;
 		}
 		playerShoot = true;
 		return false;
