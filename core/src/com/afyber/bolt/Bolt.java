@@ -338,10 +338,10 @@ public class Bolt extends Game implements InputProcessor {
 	private void randomLoot(ScrollingEnemy enemy) {
 		double random = Math.random() * 100;
 
-		if (random > 98 && enemiesDead > 100) {
+		if (random > 95 && enemiesDead > 70) {
 			powerups.add(new Powerup((Texture) assetManager.get("powerup1.png"), enemy.x + enemy.width / 2 - 17, enemy.y, 34, 34, "speedShoot "));
 		}
-		if (random > 93.333 && enemiesDead > 50) {
+		if (random > 92.5 && enemiesDead > 33) {
 			powerups.add(new Powerup((Texture)assetManager.get("powerup2.png"), enemy.x + enemy.width / 2 - 17, enemy.y, 34, 34, "doubleShoot "));
 		}
 	}
