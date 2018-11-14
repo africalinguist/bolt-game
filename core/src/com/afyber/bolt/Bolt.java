@@ -2,6 +2,7 @@ package com.afyber.bolt;
 
 
 import com.afyber.bolt.entities.Player;
+import com.afyber.bolt.entities.Powerup;
 import com.afyber.bolt.entities.ScrollingEnemy;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Game;
@@ -51,7 +52,7 @@ public class Bolt extends Game implements InputProcessor {
 
 	private ArrayList<ScrollingEnemy> enemies = new ArrayList<ScrollingEnemy>();
 
-	private ArrayList<ScrollingSprite> powerups = new ArrayList<ScrollingSprite>();
+	private ArrayList<Powerup> powerups = new ArrayList<Powerup>();
 
 	private String activePowerups = "";
 
@@ -104,7 +105,13 @@ public class Bolt extends Game implements InputProcessor {
 
 			if (bulletTime <= 0 ) {
 				if (playerShoot) {
-					playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x + 20, player.y + 16, 24, 48, -500f));
+					if (!activePowerups.contains("doubleShoot")) {
+						playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x + 20, player.y + 16, 24, 48, -500f));
+					} else {
+						playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x + 4, player.y + 16, 24, 48, -500f));
+						playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x + 36, player.y + 16, 24, 48, -500f));
+					}
+
 					if (!activePowerups.contains("speedShoot")) {
 						bulletTime = 25;
 					} else {
@@ -211,8 +218,8 @@ public class Bolt extends Game implements InputProcessor {
 
 			for (int p = 0; p < powerups.size(); p++) {
 				if (powerups.get(p).intersects(player)) {
+					activePowerups += powerups.get(p).type;
 					powerups.remove(p);
-					activePowerups += "speedShoot ";
 					if (p > 0) p--;
 				}
 			}
@@ -323,6 +330,7 @@ public class Bolt extends Game implements InputProcessor {
 
 		// Power Ups
 		manager.load("powerup1.png", Texture.class);
+		manager.load("powerup2.png", Texture.class);
 
 		manager.finishLoading();
 	}
@@ -330,10 +338,11 @@ public class Bolt extends Game implements InputProcessor {
 	private void randomLoot(ScrollingEnemy enemy) {
 		double random = Math.random() * 100;
 
-		if (random > 98) {
-			if (enemiesDead > 100) {
-				powerups.add(new ScrollingSprite((Texture) assetManager.get("powerup1.png"), enemy.x + enemy.width / 2 - 17, enemy.y, 34, 34, 100f));
-			}
+		if (random > 98 && enemiesDead > 100) {
+			powerups.add(new Powerup((Texture) assetManager.get("powerup1.png"), enemy.x + enemy.width / 2 - 17, enemy.y, 34, 34, "speedShoot "));
+		}
+		if (random > 93.333 && enemiesDead > 50) {
+			powerups.add(new Powerup((Texture)assetManager.get("powerup2.png"), enemy.x + enemy.width / 2 - 17, enemy.y, 34, 34, "doubleShoot "));
 		}
 	}
 
