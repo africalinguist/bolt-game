@@ -62,6 +62,8 @@ public class Bolt extends Game implements InputProcessor {
 
 	private Sprite progressBar;
 
+	public int score = 0;
+
 	private boolean paused = false;
 
 	private BitmapFont font;
@@ -108,14 +110,24 @@ public class Bolt extends Game implements InputProcessor {
 					if (!activePowerups.contains("doubleShoot")) {
 						playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x + 20, player.y + 16, 24, 48, -500f));
 					} else {
-						playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x + 4, player.y + 16, 24, 48, -500f));
-						playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x + 36, player.y + 16, 24, 48, -500f));
+						if (!activePowerups.contains("tripleShoot")) {
+							playerBullets.add(new ScrollingSprite((Texture) assetManager.get("playerBullet.png"), player.x + 4, player.y + 16, 24, 48, -500f));
+							playerBullets.add(new ScrollingSprite((Texture) assetManager.get("playerBullet.png"), player.x + 36, player.y + 16, 24, 48, -500f));
+						} else {
+							playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x - 6, player.y + 16, 24, 48, -500f));
+							playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x + 20, player.y + 16, 24, 48, -500f));
+							playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x + 46, player.y + 16, 24, 48, -500f));
+						}
 					}
 
 					if (!activePowerups.contains("speedShoot")) {
 						bulletTime = 25;
 					} else {
-						bulletTime = 10;
+						if (!activePowerups.contains("extremeShoot")) {
+							bulletTime = 13;
+						} else {
+							bulletTime = 7;
+						}
 					}
 				}
 			}
@@ -206,6 +218,7 @@ public class Bolt extends Game implements InputProcessor {
 					randomLoot(enemies.get(e));
 					enemies.remove(e);
 					enemiesDead++;
+					score += 10;
 					if (e > 0) e--;
 				}
 
@@ -218,7 +231,18 @@ public class Bolt extends Game implements InputProcessor {
 
 			for (int p = 0; p < powerups.size(); p++) {
 				if (powerups.get(p).intersects(player)) {
-					activePowerups += powerups.get(p).type;
+					if (powerups.get(p).type.equals("doubleShoot") && activePowerups.contains("doubleShoot")) {
+						activePowerups += "tripleShoot";
+						score += 100;
+					} else {
+						if (powerups.get(p).type.equals("speedShoot") && activePowerups.contains("speedShot")) {
+							activePowerups += "extremeShoot";
+							score += 200;
+						} else {
+							activePowerups += powerups.get(p).type;
+							score += 25;
+						}
+					}
 					powerups.remove(p);
 					if (p > 0) p--;
 				}
@@ -277,6 +301,8 @@ public class Bolt extends Game implements InputProcessor {
 		}
 
 		player.draw(FrameBatch);
+
+		font.draw(FrameBatch, "Score: " + score, 12, screenHeight-12);
 
 		if (paused) {
 			font.draw(FrameBatch, "Paused", screenWidth/2f-24, screenHeight-100);
@@ -338,11 +364,12 @@ public class Bolt extends Game implements InputProcessor {
 	private void randomLoot(ScrollingEnemy enemy) {
 		double random = Math.random() * 100;
 
-		if (random > 95 && enemiesDead > 70) {
-			powerups.add(new Powerup((Texture) assetManager.get("powerup1.png"), enemy.x + enemy.width / 2 - 17, enemy.y, 34, 34, "speedShoot "));
-		}
-		if (random > 92.5 && enemiesDead > 33) {
-			powerups.add(new Powerup((Texture)assetManager.get("powerup2.png"), enemy.x + enemy.width / 2 - 17, enemy.y, 34, 34, "doubleShoot "));
+		if (random > 99 && enemiesDead > 80) {
+			powerups.add(new Powerup((Texture) assetManager.get("powerup1.png"), enemy.x + enemy.width / 2 - 17, enemy.y, 34, 34, "speedShoot"));
+		} else {
+			if (random > 97.5 && enemiesDead > 33) {
+				powerups.add(new Powerup((Texture) assetManager.get("powerup2.png"), enemy.x + enemy.width / 2 - 17, enemy.y, 34, 34, "doubleShoot"));
+			}
 		}
 	}
 
