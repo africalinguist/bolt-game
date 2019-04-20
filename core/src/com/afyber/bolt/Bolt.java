@@ -54,7 +54,8 @@ public class Bolt extends Game implements InputProcessor {
 
 	private ArrayList<Powerup> powerups = new ArrayList<Powerup>();
 
-	private String activePowerups = "";
+	// First index (0) is double shoot timer, Second is triple shoot, Third is extreme shoot and Fourth is speed shoot
+	private int[] activePowerups = new int[4];
 
 	private AssetManager assetManager;
 
@@ -81,6 +82,10 @@ public class Bolt extends Game implements InputProcessor {
 
 		FrameBatch = new SpriteBatch();
 
+		for (int i = 0; i < activePowerups.length; i++) {
+			activePowerups[i] = 0;
+		}
+
 		font = new BitmapFont();
 
 		// needed for... stuff
@@ -104,13 +109,20 @@ public class Bolt extends Game implements InputProcessor {
 			cloudWaitTime--;
 			enemyTime--;
 
+			// Decrement powerup timers
+			for (int i = 0; i < activePowerups.length; i++) {
+				if (activePowerups[i] != 0) {
+					activePowerups[i]--;
+				}
+			}
 
-			if (bulletTime <= 0 ) {
+
+			if (bulletTime <= 0) {
 				if (playerShoot) {
-					if (!activePowerups.contains("doubleShoot")) {
+					if (activePowerups[0] == 0) {
 						playerBullets.add(new ScrollingSprite((Texture)assetManager.get("playerBullet.png"), player.x + 20, player.y + 16, 24, 48, -500f));
 					} else {
-						if (!activePowerups.contains("tripleShoot")) {
+						if (activePowerups[1] == 0) {
 							playerBullets.add(new ScrollingSprite((Texture) assetManager.get("playerBullet.png"), player.x + 4, player.y + 16, 24, 48, -500f));
 							playerBullets.add(new ScrollingSprite((Texture) assetManager.get("playerBullet.png"), player.x + 36, player.y + 16, 24, 48, -500f));
 						} else {
@@ -120,10 +132,10 @@ public class Bolt extends Game implements InputProcessor {
 						}
 					}
 
-					if (!activePowerups.contains("speedShoot")) {
+					if (activePowerups[3] == 0) {
 						bulletTime = 25;
 					} else {
-						if (!activePowerups.contains("extremeShoot")) {
+						if (activePowerups[2] == 0) {
 							bulletTime = 13;
 						} else {
 							bulletTime = 7;
@@ -240,17 +252,20 @@ public class Bolt extends Game implements InputProcessor {
 
 			for (int p = 0; p < powerups.size(); p++) {
 				if (powerups.get(p).intersects(player)) {
-					if (powerups.get(p).type.equals("doubleShoot") && activePowerups.contains("doubleShoot")) {
-						activePowerups += "tripleShoot";
-						score += 100;
-					} else {
-						if (powerups.get(p).type.equals("speedShoot") && activePowerups.contains("speedShot")) {
-							activePowerups += "extremeShoot";
-							score += 200;
-						} else {
-							activePowerups += powerups.get(p).type;
-							score += 25;
-						}
+					if (powerups.get(p).type.equals("doubleShoot") && activePowerups[0] != 0) {
+						activePowerups[0] = 0;
+						activePowerups[1] = 200;
+						score += 40;
+					} else if (powerups.get(p).type.equals("speedShoot") && activePowerups[3] != 0) {
+						activePowerups[3] = 0;
+						activePowerups[2] = 100;
+						score += 50;
+					} else if (powerups.get(p).type.equals("doubleShoot") && activePowerups[0] == 0) {
+						activePowerups[0] = 300;
+						score += 30;
+					} else if (powerups.get(p).type.equals("speedShoot") && activePowerups[3] == 0) {
+						activePowerups[3] = 100;
+						score += 30;
 					}
 					powerups.remove(p);
 					if (p > 0) p--;
@@ -269,7 +284,7 @@ public class Bolt extends Game implements InputProcessor {
 			}
 		}
 
-		// Draw the things!
+		// Draw all the things!
 		FrameBatch.begin();
 
 
