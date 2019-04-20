@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
  * @author afyber
  */
 public class ScrollingSprite extends Sprite {
-    protected float speed;
+    private float speed;
 
     public ScrollingSprite(Texture texture, float x, float speed) {
         super(texture, x, 700);

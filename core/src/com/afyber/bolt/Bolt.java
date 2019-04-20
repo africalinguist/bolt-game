@@ -155,6 +155,7 @@ public class Bolt extends Game implements InputProcessor {
 			if (enemyTime <= 0) {
 				ScrollingEnemy newEnemy = new ScrollingEnemy((Texture)assetManager.get("drone1.png"), 12 + ((int)(Math.random() * (screenWidth - 64) / 64) * 64), 64, 64, 150f + enemiesDead);
 				newEnemy.setCollisionBox(new Rectangle(4, 8, 56, 56));
+				newEnemy.type = "drone";
 
 				int type = (int) (Math.random() * 3.4);
 
@@ -162,12 +163,14 @@ public class Bolt extends Game implements InputProcessor {
 					newEnemy = new ScrollingEnemy((Texture)assetManager.get("heavy1.png"), 24 + ((int)(Math.random() * (screenWidth - 96) / 96) * 96), 96, 96, 100f + (enemiesDead / 3f));
 					newEnemy.setCollisionBox(new Rectangle(8, 16, 80, 74));
 					newEnemy.health = 3;
+					newEnemy.type = "heavy";
 				}
 
 				if (type == 2) {
 					newEnemy = new ScrollingEnemy((Texture)assetManager.get("ship1.png"), 12 + ((int)(Math.random() * (screenWidth - 64) / 64) * 64), 64, 64, 200f + (enemiesDead / 4f));
 					newEnemy.setCollisionBox(new Rectangle(4, 8, 56, 48));
 					newEnemy.health = 2;
+					newEnemy.type = "standard";
 				}
 
 				if (newEnemy.x > screenWidth) {
@@ -216,9 +219,15 @@ public class Bolt extends Game implements InputProcessor {
 
 				if (enemies.get(e).health <= 0) {
 					randomLoot(enemies.get(e));
+					if (enemies.get(e).type.equals("drone")) {
+						score += 5;
+					} else if (enemies.get(e).type.equals("heavy")) {
+						score += 10;
+					} else if (enemies.get(e).type.equals("standard")) {
+						score += 15;
+					}
 					enemies.remove(e);
 					enemiesDead++;
-					score += 10;
 					if (e > 0) e--;
 				}
 
@@ -297,7 +306,7 @@ public class Bolt extends Game implements InputProcessor {
 				progressBar.draw((i * progressBar.width), progressBar.y, FrameBatch);
 			}
 		} else {
-			font.draw(FrameBatch, "Ship destroyed!", screenWidth/2f-44, screenHeight-140);
+			font.draw(FrameBatch, "Carrier destroyed!", screenWidth/2f-48, screenHeight-140);
 		}
 
 		player.draw(FrameBatch);

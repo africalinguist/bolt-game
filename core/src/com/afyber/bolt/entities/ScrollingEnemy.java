@@ -16,6 +16,8 @@ public class ScrollingEnemy extends ScrollingSprite {
     private Rectangle collisionBox;
     public int health;
 
+    public String type;
+
     public ScrollingEnemy(Texture texture, float x, float speed) {
         super(texture, x, speed);
         this.health = 1;
